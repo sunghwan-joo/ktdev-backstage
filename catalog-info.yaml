@@ -1,13 +1,144 @@
 apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: backstage-core-system
+  description: Core system for developer platform
+  links:
+      - url: https://github.com/sunghwan-joo/kt-backstage
+        title: GitHub Repository
+        icon: github
+      - url: https://backstage.io/docs
+        title: Backstage Documentation
+        icon: docs
+spec:
+  owner: platform-team
+  domain: platform-engineering
+  providesApis:
+      - backstage-core-api
+
+---
+apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: ktdev-backstage
-  description: An example of a Backstage application.
-  # Example for optional annotations
-  # annotations:
-  #   github.com/project-slug: backstage/backstage
-  #   backstage.io/techdocs-ref: dir:.
+  name: catalog-service
+  description: Backstage Catalog Service Component
+  tags:
+    - core
+    - service
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: sunghwan-joo/kt-backstage
 spec:
-  type: website
-  owner: john@example.com
-  lifecycle: experimental
+  type: service
+  lifecycle: production
+  owner: user:guest
+  system: backstage-core-system
+  dependsOn:
+    - resource:default/postgres-db
+    - component:search-service
+  providesApis:
+    - backstage-core-api  # API 참조 추가
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: search-service
+  description: Backstage Search Service Component
+  tags:
+    - core
+    - service
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: sunghwan-joo/kt-backstage
+spec:
+  type: service
+  lifecycle: production
+  owner: user:guest
+  system: backstage-core-system
+  dependsOn:
+    - resource:default/elasticsearch
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: techdocs-service
+  description: Backstage TechDocs Service Component
+  tags:
+    - core
+    - documentation
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: sunghwan-joo/kt-backstage
+spec:
+  type: service
+  lifecycle: production
+  owner: user:guest
+  system: backstage-core-system
+  dependsOn:
+    - resource:default/s3-storage
+    - component:catalog-service
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: scaffolder-templates
+  description: Software Templates Service
+  tags:
+    - core
+    - templates
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: sunghwan-joo/kt-backstage
+spec:
+  type: service
+  lifecycle: production
+  owner: user:guest
+  system: backstage-core-system
+  dependsOn:
+    - component:catalog-service
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: postgres-db
+  description: PostgreSQL Database for Catalog Service
+spec:
+  type: database
+  owner: user:guest
+  system: backstage-core-system
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: elasticsearch
+  description: Elasticsearch for Search Service
+spec:
+  type: search-engine
+  owner: user:guest
+  system: backstage-core-system
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: s3-storage
+  description: S3 Storage for TechDocs
+spec:
+  type: storage
+  owner: user:guest
+  system: backstage-core-system
+  
+---
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: backstage-core-apis
+  description: Backstage Core API Definitions
+spec:
+  targets:
+    - ./apis/core-api.yaml

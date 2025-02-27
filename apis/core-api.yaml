@@ -1,0 +1,19 @@
+# apis/core-api.yaml
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: backstage-core-api
+  description: Backstage Core Service APIs
+  tags:
+    - core
+    - rest
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: openapi
+  lifecycle: production
+  owner: user:guest
+  definition:
+    $text: ./openapi.yaml
+  providedBy:  # API 제공자 추가
+    - catalog-service

@@ -1,0 +1,11 @@
+# apis/mkdocs.yml
+site_name: 'Backstage Core API Documentation'
+nav:
+  - Home: index.md
+  - catalog guide: pages/catalog-guide.md
+  - custom action guide: pages/custom-action-guide.md
+  - custom permission guide: pages/custom-permission-guide.md
+  - custom plugin guide: pages/custom-plugin-guide.md
+  - template guide: pages/template-guide.md
+plugins:
+  - techdocs-core

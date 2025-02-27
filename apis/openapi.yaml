@@ -1,0 +1,187 @@
+openapi: 3.0.0
+info:
+  title: "Backstage Core API"
+  version: "1.0.0"
+  description: "Core APIs for Backstage platform"
+paths:
+  /api/catalog/entities:
+    get:
+      summary: "Get all entities"
+      operationId: "getAllEntities"
+      tags:
+        - "Catalog"
+      parameters:
+        - name: "filter"
+          in: "query"
+          schema:
+            type: "string"
+          description: "Filter string for entities"
+      responses:
+        '200':
+          description: "List of entities"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Entity"
+
+  /api/search/query:
+    post:
+      summary: "Search entities"
+      operationId: "searchEntities"
+      tags:
+        - "Search"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                term:
+                  type: "string"
+                  description: "Search term"
+                filters:
+                  type: "object"
+                  additionalProperties:
+                    type: "string"
+                  description: "Search filters"
+                  example:
+                    kind: "Component"
+                    type: "service"
+      responses:
+        '200':
+          description: "Search results"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResults"
+
+  /api/techdocs:
+    get:
+      summary: "Get TechDocs content"
+      operationId: "getTechDocsContent"
+      tags:
+        - "TechDocs"
+      parameters:
+        - name: "namespace"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+        - name: "kind"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+        - name: "name"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        '200':
+          description: "TechDocs content"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TechDocsContent"
+
+components:
+  schemas:
+    Entity:
+      type: "object"
+      required:
+        - "metadata"
+        - "spec"
+      properties:
+        metadata:
+          type: "object"
+          required:
+            - "name"
+          properties:
+            name:
+              type: "string"
+            namespace:
+              type: "string"
+            description:
+              type: "string"
+        spec:
+          type: "object"
+          required:
+            - "type"
+            - "owner"
+          properties:
+            type:
+              type: "string"
+            owner:
+              type: "string"
+        relations:
+          type: "array"
+          items:
+            type: "object"
+            required:
+              - "type"
+              - "targetRef"
+            properties:
+              type:
+                type: "string"
+              targetRef:
+                type: "string"
+
+    SearchResults:
+      type: "object"
+      required:
+        - "results"
+      properties:
+        results:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/SearchResult"
+
+    SearchResult:
+      type: "object"
+      required:
+        - "type"
+        - "document"
+      properties:
+        type:
+          type: "string"
+        document:
+          type: "object"
+          properties:
+            title:
+              type: "string"
+            text:
+              type: "string"
+            location:
+              type: "string"
+        highlight:
+          type: "object"
+          properties:
+            title:
+              type: "array"
+              items:
+                type: "string"
+            text:
+              type: "array"
+              items:
+                type: "string"
+
+    TechDocsContent:
+      type: "object"
+      required:
+        - "content"
+      properties:
+        content:
+          type: "string"
+        metadata:
+          type: "object"
+          properties:
+            title:
+              type: "string"
+            description:
+              type: "string"
+            etag:
+              type: "string"
